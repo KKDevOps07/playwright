@@ -1,73 +1,48 @@
 import re
 from playwright.sync_api import Page, expect
+import os
 
-BASE_URL = "http://localhost:8080"
-
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
 
 class TestNetflixSmoke:
-    """
-    Real industry-grade smoke tests.
 
-    These validate:
-    - App is up
-    - SPA is mounted
-    - Navigation exists
-    - Content is rendered
+    def start_trace(self, page: Page, trace_name: str):
+        # Start tracing
+        page.context.tracing.start(screenshots=True, snapshots=True, sources=True)
+        return trace_name
 
-    No assumptions about features that don't exist.
-    """
+    def stop_trace(self, page: Page, trace_name: str):
+        # Stop tracing
+        os.makedirs("traces", exist_ok=True)
+        page.context.tracing.stop(path=f"traces/{trace_name}.zip")
 
     def test_app_loads_successfully(self, page: Page):
-        """
-        Health check:
-        - App responds
-        - No 404
-        """
+        trace_name = self.start_trace(page, "test_app_loads_successfully")
         page.goto(BASE_URL, wait_until="domcontentloaded")
-
         expect(page).not_to_have_title(re.compile("404", re.I))
         expect(page.locator("body")).to_be_attached()
-
+        self.stop_trace(page, trace_name)
 
     def test_spa_root_is_rendered(self, page: Page):
-        """
-        Frontend check:
-        - React root exists
-        """
+        trace_name = self.start_trace(page, "test_spa_root_is_rendered")
         page.goto(BASE_URL, wait_until="domcontentloaded")
-
-        root = page.locator("#root")
-        expect(root).to_be_attached()
-
+        expect(page.locator("#root")).to_be_attached()
+        self.stop_trace(page, trace_name)
 
     def test_navigation_is_available(self, page: Page):
-        """
-        Usability check:
-        - Navigation/header exists
-        """
+        trace_name = self.start_trace(page, "test_navigation_is_available")
         page.goto(BASE_URL, wait_until="domcontentloaded")
-
-        nav = page.locator("nav, header")
-        expect(nav.first).to_be_visible()
-
+        expect(page.locator("nav, header").first).to_be_visible()
+        self.stop_trace(page, trace_name)
 
     def test_some_visible_ui_exists(self, page: Page):
-        """
-        Rendering check:
-        - At least one visible UI element exists
-        """
+        trace_name = self.start_trace(page, "test_some_visible_ui_exists")
         page.goto(BASE_URL, wait_until="domcontentloaded")
-
-        visible = page.locator("*:visible")
-        assert visible.count() > 5
-
+        assert page.locator("*:visible").count() > 5
+        self.stop_trace(page, trace_name)
 
     def test_content_is_loaded(self, page: Page):
-        """
-        Business check:
-        - Some real content exists (images/cards)
-        """
+        trace_name = self.start_trace(page, "test_content_is_loaded")
         page.goto(BASE_URL, wait_until="domcontentloaded")
-
-        cards = page.locator("img, section, article, div")
-        assert cards.count() > 5
+        assert page.locator("img, section, article, div").count() > 5
+        self.stop_trace(page, trace_name)

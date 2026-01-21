@@ -71,6 +71,14 @@ jobs:
           --disable-warnings \
           --continue-on-collection-errors \
           --junitxml=report.xml || true
+    
+# ---------------------------
+# Zip traces
+# ---------------------------
+    - name: Zip traces
+      if: always()
+      run: |
+        zip -r traces.zip traces || true
 
     # ---------------------------
     # Cleanup
