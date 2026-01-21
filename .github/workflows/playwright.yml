@@ -71,6 +71,7 @@ jobs:
           --disable-warnings \
           --continue-on-collection-errors \
           --junitxml=report.xml || true
+          -- trace on 
     
 # ---------------------------
 # Zip traces
@@ -78,7 +79,10 @@ jobs:
     - name: Zip traces
       if: always()
       run: |
-        zip -r traces.zip traces || true
+        mkdir -p traces
+        cp -r tests/.playwright/traces/* traces/ || true
+        zip -r traces.zip traces
+
     # ---------------------------
     # Upload Artifacts
     # ---------------------------
