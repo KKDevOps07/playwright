@@ -70,8 +70,8 @@ jobs:
           --maxfail=0 \
           --disable-warnings \
           --continue-on-collection-errors \
-          --junitxml=report.xml || true
-          -- trace on 
+          --junitxml=report.xml 
+          -- trace on || true
     
 # ---------------------------
 # Zip traces
