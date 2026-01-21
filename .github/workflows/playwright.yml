@@ -66,7 +66,7 @@ jobs:
     # ---------------------------
     - name: Run smoke tests
       run: |
-        pytest tests/smoke-tests/smoke_tests.py --headed
+        pytest tests/smoke-tests/smoke_tests.py 
 
     # ---------------------------
     # Cleanup
