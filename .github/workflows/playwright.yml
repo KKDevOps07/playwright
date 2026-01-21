@@ -79,7 +79,15 @@ jobs:
       if: always()
       run: |
         zip -r traces.zip traces || true
+    # ---------------------------
+    # Upload Artifacts
+    # ---------------------------
 
+    - name: Upload traces as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: traces
+        path: traces.zip
     # ---------------------------
     # Cleanup
     # ---------------------------
